@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.ph4ntom.shadow.ShadowAgent</string>
+
+    <key>AssociatedBundleIdentifiers</key>
+    <array>
+        <string>com.ph4ntom.shadow.ShadowAgent</string>
+    </array>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Applications/ShadowAgent.app/Contents/MacOS/ShadowAgent</string>
+    </array>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>KeepAlive</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>/tmp/ShadowAgent.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>/tmp/ShadowAgent.err.log</string>
+</dict>
+</plist>
