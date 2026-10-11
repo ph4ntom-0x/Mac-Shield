@@ -1,8 +1,31 @@
 # Mac Shield
 
-An open-source intrusion-alert system for macOS. When someone fails your lock-screen password
-three times, Mac Shield alerts your phone and lets **you** decide whether to capture a photo and
-location, instead of firing the camera on its own.
+Mac Shield tells you when someone is trying to break into your MacBook.
+
+If someone types the wrong password 3 times on your lock screen, Mac Shield
+sends an alert to the **Shadow app** on your phone. You can also have it take a
+photo of that person and note the location of your Mac.
+
+## What's inside
+
+This project has two parts:
+
+1. **Shadow Agent** runs on your MacBook in the background. It watches the
+   system logs and notices when the wrong password is typed 3 times in a row.
+2. **Shadow App** is the app on your phone. It shows you the alerts and lets
+   you control the agent.
+
+## Two ways to use it
+
+You choose with the **Real-Time** button in the Shadow app.
+
+- **Real-Time ON:** after the 3rd wrong password, the agent instantly takes a
+  photo and records the location. You get the picture and the location in the
+  app right away.
+- **Real-Time OFF (default):** you only get an alert in the app. No photo is
+  taken and no location is sent. If the alert looks real, you tap
+ **Capture photo** and the agent takes the photo and location then.
+-**Capture :** you can capture anytime using that capture button manually
 
 > **Status:** working prototype, tested on  my  own Mac. Not audited. See
 > [Limitations](docs/ARCHITECTURE.md#limitations).
@@ -25,7 +48,7 @@ ShadowAgent (Swift, runs in background)  ⇄  Firestore  ⇄  Shadow phone app (
 
 ## Why I built this
 
-Last summer, while I was home for the holidays, my 7-year-old cousin tried to
+This  summer, while I was home for the holidays, my 7-year-old cousin tried to
 unlock my MacBook, probably to watch cartoons. He typed passwords again and
 again, failed, and eventually decided the next step was to put the laptop in a
 bathtub full of water. The MacBook didn't survive.
