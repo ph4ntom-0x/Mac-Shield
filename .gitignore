@@ -27,3 +27,12 @@ DerivedData
 #Sensitive Data
 ShadowAgent/Secrets.swift
 
+# Reactive Native /Expo (shadow-app)
+shadow-app/node_modules/
+shadow-app/.expo/
+shadow-app/dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+shadow-app/.evn
+shadow-app/.env.local

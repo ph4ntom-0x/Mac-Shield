@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "MacShield",
+    "slug": "shadow-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "jsEngine": "hermes",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0b0d10"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ph4ntom0x.shadowapp"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/icon.png", 
+        "backgroundColor": "#0b0d10"
+      },
+      "package": "com.ph4ntom0x.shadowapp",
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ]
+    },
+    "extra": {
+      "eas": {
+        "projectId": "YOUR_EAS_PROJECT_ID_HERE"
+      },
+      "firebaseProjectId": "YOUR_FIREBASE_PROJECT_ID_HERE",
+      "firebaseProjectNumber": "YOUR_FIREBASE_PROJECT_NUMBER_HERE"
+    }
+  }
+}
