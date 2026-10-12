@@ -71,7 +71,7 @@ final class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, @unchecked S
         }
     }
 
-    // MARK: - AVCapturePhotoCaptureDelegate
+    // AVCapturePhotoCapture
     nonisolated func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         // Stop session and release webcam hardware immediately when function exits
         defer {
@@ -101,7 +101,7 @@ final class CameraManager: NSObject, AVCapturePhotoCaptureDelegate, @unchecked S
         completion?(rawData)
     }
 
-    // MARK: - Utility: Base64 Compression Helper for IncidentEngine Uploads
+    //  Utility: Base64 Compression Helper for IncidentEngine Uploads
     static func compressAndEncodeBase64(rawData: Data, compressionQuality: CGFloat = 0.35) -> String? {
         guard let image = NSImage(data: rawData),
               let tiffData = image.tiffRepresentation,
