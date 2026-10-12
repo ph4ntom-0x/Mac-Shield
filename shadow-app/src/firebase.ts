@@ -3,7 +3,7 @@ import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 
 const firebaseConfig = {
   projectId: "mac-shield",
-  apiKey: "AIzaSyD6Ac3TGRbGj2DbQ7wvrEhocO1xJo239WI",
+  apiKey: "AIzaSyD6Ac3TGRbGj2DbQ7wvrEhocO1xJo239WI", // examples api key , not real one
 };
 
 export const app = initializeApp(firebaseConfig);
