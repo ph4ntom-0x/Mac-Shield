@@ -110,7 +110,7 @@ enum CommandPoller {
         return results
     }
 
-    // MARK: - Command Execution
+    //  Command  pollar Execution
 
     private static func executeCommand(_ command: PendingCommand) async {
         log(" [CommandPoller] Executing command '\(command.action)' [ID: \(command.id)]...")
@@ -127,7 +127,7 @@ enum CommandPoller {
         await markAsCompleted(command.id)
     }
 
-    //  Status Update
+    // command  Status Update
 
     private static func markAsCompleted(_ docId: String) async {
         let base = "\(BASE_URL)/commands/\(docId)"
@@ -154,7 +154,7 @@ enum CommandPoller {
     }
 }
 
-//  Helper Models
+//  help modele 
 
 private struct PendingCommand: Sendable {
     let id: String
