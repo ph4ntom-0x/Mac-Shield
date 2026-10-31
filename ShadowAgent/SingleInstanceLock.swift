@@ -15,11 +15,12 @@ enum SingleInstanceLock {
         let lockPath = directory.appendingPathComponent("ShadowAgent.lock").path
 
         // Open or create the lock file
-        fileDescriptor = open(lockPath, O_CREAT | O_RDWR, 0666)
+        fileDescriptor = open(lockPath, O_CREAT | O_RDWR, 0o600)
         guard fileDescriptor != -1 else {
-            print(" [SingleInstanceLock] Failed to open lock file descriptor.")
+            print(" [SingleInstanceLock] Cannot open \(lockPath): \(String(cString: strerror(errno)))")
             return false
         }
+        fchmod(fileDescriptor, 0o600)   // repairs wrong permissions on an existing file
 
         // Apply non-blocking exclusive lock managed directly by the kernel
         if flock(fileDescriptor, LOCK_EX | LOCK_NB) != 0 {
