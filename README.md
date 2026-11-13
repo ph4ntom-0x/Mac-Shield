@@ -1,82 +1,60 @@
-# Mac Shield
+# Mac Shield 🛡️
 
-Mac Shield tells you when someone is trying to break into your MacBook.
+Mac Shield is your MacBook's personal security guard. If someone types the wrong password 3 times on your lock screen, Mac Shield instantly sends an alert to your phone. 
 
-If someone types the wrong password 3 times on your lock screen, Mac Shield
-sends an alert to the **Shadow app** on your phone. You can also have it take a
-photo of that person and note the location of your Mac.
+You can receive these alerts—and picture and location (real time on) ,just receive notification if you had off real time mode and can take action, like snapping a photo of the intruder or grabbing your Mac's location—using either our dedicated **Shadow App** or directly through a **Telegram Bot**. 
 
 ## What's inside
 
-This project has two parts:
+1. **Shadow Agent:** A lightweight Swift program that runs quietly in the background of your Mac. It watches system logs for failed login attempts.
+2. **Shadow App & Dashboard:** A dedicated mobile app (React Native) and web dashboard to receive alerts and send commands.
+3. **Telegram Bot (New!):** Don't want to install another app? You can link Mac Shield to a Telegram bot to get instant messages and control your Mac right from your chat list.
 
-1. **Shadow Agent** runs on your MacBook in the background. It watches the
-   system logs and notices when the wrong password is typed 3 times in a row.
-2. **Shadow App** is the app on your phone. It shows you the alerts and lets
-   you control the agent.
+## How you can use it
 
-## Two ways to use it
+You can toggle how aggressive you want Mac Shield to be using the settings in the Shadow app or via Telegram. 
 
-You choose with the **Real-Time** button in the Shadow app.
+*   **Real-Time OFF (Default):** *Privacy first.* After 3 failed passwords, you get a simple text alert on your phone. No photos or locations are taken yet. If the alert seems suspicious, tap **Capture photo** to grab evidence right then.
+*   **Real-Time ON:** *Total security.* After the 3rd failed attempt, the agent instantly takes a photo and grabs the Mac's location, sending it all to your app and Telegram immediately.
+*   **Manual Capture:** *Check in anytime.* Wondering who is at your desk? Hit the **Capture** button in the app or Telegram bot at any time to discreetly snap a photo and see what's happening.
 
-- **Real-Time ON:** after the 3rd wrong password, the agent instantly takes a
-  photo and records the location. You get the picture and the location in the
-  app right away.
-- **Real-Time OFF (default):** you only get an alert in the app. No photo is
-  taken and no location is sent. If the alert looks real, you tap
- **Capture photo** and the agent takes the photo and location then.
--**Capture :** you can capture anytime using that capture button manually
-
-> **Status:** working prototype, tested on  my  own Mac. Not audited. See
-> [Limitations](docs/ARCHITECTURE.md#limitations).
+> **Status:** Working prototype, tested on my own Mac. Not audited. See [Limitations](docs/ARCHITECTURE.md#limitations).
 
 ## How it works
 
+```text
+ShadowAgent (Swift, macOS)  ⇄  Firestore  ⇄  Shadow App (React Native)
+                                          ⇄  Web Dashboard (React)
+                                          ⇄  Telegram Bot
 ```
-ShadowAgent (Swift, runs in background)  ⇄  Firestore  ⇄  Shadow phone app (React Native)
-                                                 ⇅
-                                          Web dashboard (React)
-```
 
-1. **ShadowAgent** watches macOS's unified log for failed authentication events.
-2. After 3 failures it posts a **text-only alert** (no photo, no location) , if real time off from mobile app.
-3. Your phone shows the alert along with capture at that instant (if real time on).
-4. You can directly tap capture to take capture of any instant and can see who using my mac , tap **Capture photo** or **Trigger alarm**.
-5. The agent picks up the command and only then captures a photo and coordinates.
-6. Optional **Real-Time Mode** captures immediately on the third failure, with no tap.
+1. **ShadowAgent** monitors the macOS unified log for failed authentication events.
+2. Upon 3 failures, it posts an alert to Firestore. If "Real-Time" is off, this is a text-only alert to respect privacy.
+3. You get a push notification via the **Shadow App** or a message from the **Telegram Bot**.
+4. From your phone, you can tap **Capture photo** or **Trigger alarm**.
+5. The agent on your Mac picks up your command, executes it, and sends the photo/coordinates back to your screen.
 
+## The Bathtub Incident (Why I built this)
 
-## Why I built this
+This summer, while I was home for the holidays, my 7-year-old cousin tried to unlock my MacBook, probably to watch cartoons. He typed passwords again and again, failed, and eventually decided his next best option was to put the laptop in a bathtub full of water. The MacBook didn't survive.
 
-This  summer, while I was home for the holidays, my 7-year-old cousin tried to
-unlock my MacBook, probably to watch cartoons. He typed passwords again and
-again, failed, and eventually decided the next step was to put the laptop in a
-bathtub full of water. The MacBook didn't survive.
+I had no idea any of this was happening. Nothing warned me, and by the time I found out, it was too late. Mac Shield is exactly what I wished I had in that moment: a quick message on my phone saying *"someone is failing to unlock your laptop right now,"* so I could react while it still mattered.
 
-I had no idea any of it was happening. Nothing told me someone was trying to get
-into my Mac, and by the time I found out it was too late. Mac Shield is what I
-wanted at that moment: a message on my phone saying *someone is failing to unlock
-your laptop right now*, so I could react while it still mattered.
-
-It started as a one-time fix for one bad summer. It turned into a project about
-macOS internals, background services, code signing and privacy design.
+What started as a revenge-driven fix for one bad summer turned into a deep dive into macOS internals, background services, code signing, and privacy design.
 
 ## Documentation
 
-
 | Read this | If you want to |
 |---|---|
-| [User Guide](docs/USER_GUIDE.md) | Install, configure and use Mac Shield |
+| [User Guide](docs/USER_GUIDE.md) | Install, configure, and connect the App/Telegram bot |
 | [Architecture](docs/ARCHITECTURE.md) | Understand the code, file by file |
-| [Story](docs/STORY.md) | Read how and why it was built, and the problems solved |
-| [Why Mac Shield](docs/WHY_MACSHIELD.md) | See how it compares with existing tools |
+| [Story](docs/STORY.md) | Read the full backstory of how and why it was built |
+| [Why Mac Shield](docs/WHY_MACSHIELD.md) | See how it compares to existing security tools |
 | [Research Roadmap](docs/RESEARCH_ROADMAP.md) | Follow the planned study of macOS internals and seL4 |
 
-## Responsible use
+## Responsible Use
 
-Mac Shield is for a computer **you own and control**. It asks for visible system permissions
-(Camera, Location, Full Disk Access) during setup. Do not install it on someone else's device or
-use it to watch another person.
+Mac Shield is strictly for a computer **you own and control**. It requires visible system permissions (Camera, Location, Full Disk Access) during setup. Do not install it on someone else's device, and do not use it to spy on other people.
 
 ## License
 
