@@ -24,7 +24,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         setupStatusItem()
 
-        #if !DEBU
+        #if !DEBUG
         guard SingleInstanceLock.acquire() else {
             log(" Another instance is already running. Exiting.")
             updateStatusItem(running: false)
@@ -39,19 +39,35 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         log(" ShadowAgent active [\(mode)]")
 
         monitor.start()
-        CommandPoller.start()
+
+        // Commands from the Shadow app / dashboard, through Firestore.
+        // Set FIRESTORE_COMMANDS_ENABLED = false in Config.swift to use Telegram only.
+        if FIRESTORE_ENABLED && FIRESTORE_COMMANDS_ENABLED {
+            CommandPoller.start()
+        } else {
+            log(" [AppDelegate] Firestore commands are off. Only Telegram can send commands.")
+        }
+
+        if !FIRESTORE_ENABLED && TELEGRAM_TOKEN.isEmpty {
+            log(" [AppDelegate] Neither Firestore nor Telegram is configured. Alerts have nowhere to go.")
+        }
+
+        // Telegram alerts and buttons (does nothing if no bot token is set)
+        TelegramNotifier.shared.start()
+
         updateStatusItem(running: true)
     }
 
     func applicationWillTerminate(_ notification: Notification) {
         monitor.stop()
+        TelegramNotifier.shared.stop()
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         return false
     }
 
-    // MARK: - Status Item (Menu Bar)
+    //  Status Item (Menu Bar)
     private func setupStatusItem() {
         let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         item.button?.image = NSImage(systemSymbolName: "shield.lefthalf.filled", accessibilityDescription: "ShadowAgent")
@@ -86,7 +102,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.terminate(nil)
     }
 
-    // MARK: - Logging Helper
+    //  Logging Helper
     private func log(_ message: String) {
         let timestamp = ISO8601DateFormatter().string(from: Date())
         let line = "\(timestamp) \(message)"

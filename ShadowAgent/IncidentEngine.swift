@@ -1,6 +1,7 @@
 import Foundation
 
 /// Coordinates evidence collection (camera snapshot + location) and uploads incident telemetry to Firestore.
+/// When Telegram is configured, the same incidents are also sent to the owner's Telegram chat.
 @MainActor
 final class IncidentEngine {
     static let shared = IncidentEngine()
@@ -10,7 +11,7 @@ final class IncidentEngine {
 
     private var isProcessingIncident = false
 
-    // MARK: - Threshold / debounce state (restored)
+    // MARK: - Threshold / debounce state
     private var failedAttemptCount = 0
     private let maxThreshold = 3
     private var lastAttemptDate: Date = .distantPast
@@ -25,7 +26,7 @@ final class IncidentEngine {
 
     private init() {}
 
-    // MARK: - Public Entry Points
+    //  Public Entry Points
 
     /// Called by LogMonitor on every matched log line. Counts toward the
     /// 3-attempt threshold with debounce; only branches into capture-or-alert
@@ -47,7 +48,7 @@ final class IncidentEngine {
         log(" [IncidentEngine] MAX THRESHOLD REACHED (\(maxThreshold)/\(maxThreshold))!")
 
         Task {
-            let isRealTimeOn = await SettingsManager.fetchRealTimeMode()
+            let isRealTimeOn = await SettingsManager.currentRealTimeMode()
             if isRealTimeOn {
                 log(" [IncidentEngine] Real-Time Mode is ON — capturing immediately.")
                 self.triggerPipeline(reason: "SUSPICIOUS_ACTIVITY")
@@ -58,7 +59,7 @@ final class IncidentEngine {
         }
     }
 
-    /// Triggered remotely by CommandPoller on manual capture commands.
+    /// Triggered remotely (Firestore command or Telegram button).
     /// Always captures, regardless of Real-Time Mode — this is the
     /// user-initiated path the toggle is meant to defer to.
     func handleManualCapture() {
@@ -78,10 +79,10 @@ final class IncidentEngine {
         }
     }
 
-    // MARK: - Core Pipeline
+    // Core Pipeline
 
     private func executeIncidentResponsePipeline(reason: String) async {
-        log("🔍 [IncidentEngine] Incident triggered (\(reason)). Gathering evidence...")
+        log(" [IncidentEngine] Incident triggered (\(reason)). Gathering evidence...")
 
         async let photoData = fetchCameraSnapshotSafely()
         async let locationData = locationManager.fetchLocation()
@@ -94,7 +95,7 @@ final class IncidentEngine {
         await uploadIncident(imageData: imageData, location: location, eventType: reason)
     }
 
-    // MARK: - Alert-only path (Real-Time Mode OFF)
+    //  Alert-only path (Real-Time Mode OFF)
 
     private func postAlertOnly() async {
         let incidentID = "INC-" + String(UUID().uuidString.prefix(8)).uppercased()
@@ -107,10 +108,18 @@ final class IncidentEngine {
             "device": ["stringValue": DEVICE_NAME],
             "failureCount": ["integerValue": "3"]
         ]
-        await sendIncidentFields(fields, incidentID: incidentID)
+
+        // Telegram: runs at the same time as the Firestore upload (does nothing if not configured)
+        Task {
+            await TelegramNotifier.shared.sendAlert(incidentID: incidentID, device: DEVICE_NAME)
+        }
+
+        if FIRESTORE_ENABLED {
+            await sendIncidentFields(fields, incidentID: incidentID)
+        }
     }
 
-    // MARK: - Hardware Helpers
+    //  Hardware Helpers
 
     private func fetchCameraSnapshotSafely() async -> Data? {
         await withCheckedContinuation { continuation in
@@ -131,7 +140,7 @@ final class IncidentEngine {
         }
     }
 
-    // MARK: - Telemetry Dispatch (Firestore REST API)
+    //  Telemetry Dispatch (Firestore REST API)
     // Field names kept identical to the original schema — incidentId,
     // eventType, photoBase64, locationSource, latitude, longitude,
     // timestamp, device, failureCount — because the web dashboard and
@@ -156,7 +165,22 @@ final class IncidentEngine {
             fields["photoBase64"] = ["stringValue": ""]
         }
 
-        await sendIncidentFields(fields, incidentID: incidentID)
+        // Telegram: same incident, sent at the same time as the Firestore upload
+        Task {
+            await TelegramNotifier.shared.sendCapture(
+                incidentID: incidentID,
+                eventType: eventType,
+                device: DEVICE_NAME,
+                imageData: imageData,
+                locationText: location.0,
+                latitude: location.1,
+                longitude: location.2
+            )
+        }
+
+        if FIRESTORE_ENABLED {
+            await sendIncidentFields(fields, incidentID: incidentID)
+        }
     }
 
     private func sendIncidentFields(_ fields: [String: Any], incidentID: String) async {
