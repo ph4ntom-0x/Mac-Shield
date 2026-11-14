@@ -67,11 +67,11 @@ It started as a fix for one bad summer. It turned into a deep dive into macOS in
 
 | Read this | If you want to |
 |---|---|
-| 📖 [User Guide](docs/USER_GUIDE.md) | Install, configure, and connect the Shadow app or the Telegram bot |
-| 🏗️ [Architecture](docs/ARCHITECTURE.md) | Understand the code, the data, the security model and the limits |
-| 🔐 [TCC Permissions](docs/TCC_PERMISSIONS.md) | See how macOS camera, location and disk permissions were handled |
-| 🛠️ [Problems Solved](docs/PROBLEMS_SOLVED.md) | Read the bugs I hit, what caused them, and how I fixed them |
-| 💡 [Why Mac Shield](docs/WHY_MACSHIELD.md) | See why I built it and how it compares with other tools |
+| 📖 [User Guide](docs/user-guide.md) | Install, configure, and connect the Shadow app or the Telegram bot |
+| 🏗️ [Architecture](docs/architecture.md) | Understand the code, the data, the security model and the limits |
+| 🔐 [TCC Permissions](docs/tcc-permissions.md) | See how macOS camera, location and disk permissions were handled |
+| 🛠️ [Problems Solved](docs/problems-solved.md) | Read the bugs I hit, what caused them, and how I fixed them |
+| 💡 [Why Mac Shield](docs/why-mac-shield.md) | See why I built it and how it compares with other tools |
 
 ## Responsible use
 
