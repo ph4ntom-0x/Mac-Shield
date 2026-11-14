@@ -53,7 +53,7 @@ cp ShadowAgent/Secrets.swift.example ShadowAgent/Secrets.swift   # then add your
 ./deploy.sh
 ```
 
-That is the short version. The **[User Guide](docs/USER_GUIDE.md)** covers Firebase, permissions, Telegram and testing step by step.
+That is the short version. The **[User Guide](docs/user-guide.md)** covers Firebase, permissions, Telegram and testing step by step.
 
 ## Why I built this
 
